@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 logging.basicConfig()
-logging.root.setLevel(logging.INFO)
+logging.root.setLevel(logging.DEBUG)
 
 # class CrawlerController(object):
 #     '''Split targets into several Crawler, avoid request url too long'''
