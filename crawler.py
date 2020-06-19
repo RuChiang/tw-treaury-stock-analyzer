@@ -112,8 +112,8 @@ def main():
     # get src file
     src_data = sys.argv[1]
     # get list of stock indices
-    targets = sys.argv[2:]
-    file_reader = FileReader(src_data, targets)
+    target = sys.argv[2]
+    file_reader = FileReader(src_data, target)
     date_ranges = file_reader.get_date_range()
 
     logger.debug(f"date_ranges: {date_ranges}")
@@ -125,10 +125,20 @@ def main():
         #  if start and end are in the same month
 
         start_yr = start[0:4]
-        end_yr = end[0:4]
         start_month = start[4:6]
+        start_date = start[6:8]
+
+        end_yr = end[0:4]
         end_month = end[4:6]
         end_date = end[6:8]
+
+        logger.debug(f"start_yr {start_yr}")
+        logger.debug(f"start_month {start_month}")
+        logger.debug(f"start_date {start_date}")
+
+        logger.debug(f"end_yr {end_yr}")
+        logger.debug(f"end_month {end_month}")
+        logger.debug(f"end_date {end_date}")
 
         [curr_year, curr_month, curr_date] = datetime.today().strftime(
             '%Y/%m/%d').split('/')
@@ -140,7 +150,7 @@ def main():
             continue
 
         #  get headers
-        response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start}&stockNo=2303&_=1592225418511",
+        response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start}&stockNo={target}&_=1592225418511",
                                 headers={'Accept-Language': 'zh-TW'})
         content = json.loads(response.text)
         headers = content["fields"]
@@ -148,43 +158,43 @@ def main():
         data = []
 
         if start_yr == end_yr and start_month == end_month:
-            response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start}&stockNo=2303&_=1592225418511",
+            response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start}&stockNo={target}&_=1592225418511",
                                     headers={'Accept-Language': 'zh-TW'})
             content = json.loads(response.text)
             data = data + content["data"]
         # get months price
         elif start_yr == end_yr and start_month != end_month:
             for month in range(int(start_month), int(end_month) + 1):
-                response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                         headers={'Accept-Language': 'zh-TW'})
                 content = json.loads(response.text)
                 data = data + content["data"]
         else:
             if int(end_yr) - int(start_yr) == 1:
                 for month in range(int(start_month), 13):
-                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                             headers={'Accept-Language': 'zh-TW'})
                     content = json.loads(response.text)
                     data = data + content["data"]
                 for month in range(1, int(end_month) + 1):
-                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={end_yr}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={end_yr}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                             headers={'Accept-Language': 'zh-TW'})
                     content = json.loads(response.text)
                     data = data + content["data"]
             else:
                 for month in range(int(start_month), 13):
-                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                             headers={'Accept-Language': 'zh-TW'})
                     content = json.loads(response.text)
                     data = data + content["data"]
                 for year in range(int(start_yr), int(end_yr) + 1):
                     for month in range(1, 13):
-                        response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={year}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                        response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={year}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                                 headers={'Accept-Language': 'zh-TW'})
                     content = json.loads(response.text)
                     data = data + content["data"]
                 for month in range(1, int(end_month) + 1):
-                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo=2303&_=1592225418511",
+                    response = requests.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={start_yr}{str(month).rjust(2, '0')}01&stockNo={target}&_=1592225418511",
                                             headers={'Accept-Language': 'zh-TW'})
                     content = json.loads(response.text)
                     data = data + content["data"]
@@ -192,9 +202,25 @@ def main():
         logger.debug(f"headers\n{headers}")
         logger.debug(f"data\n{data}")
 
+        # sanitize the data
+        sanitize_data = []
+        for point in data:
+            logger.debug(f"point {point}")
+            yr, mon, day = point[0].split('/')
+            logger.debug(f"yr {yr}")
+            logger.debug(f"mon {mon}")
+            logger.debug(f"day {day}")
+
+            if int(yr) + 1911 == int(start_yr) and int(mon) == int(start_month) and int(day) < int(start_date):
+                continue
+            elif int(yr) + 1911 == int(end_yr) and int(mon) == int(end_month) and int(day) > int(end_date):
+                continue
+            else:
+                sanitize_data.append(point)
         #  write to files
         recoder = Recorder()
-        recoder.record_to_csv(f"{targets}-{start}-{end}", headers, data)
+        recoder.record_to_csv(f"{target}-{start}-{end}",
+                              headers, sanitize_data)
 
 
 if __name__ == '__main__':
