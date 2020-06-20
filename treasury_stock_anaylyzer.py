@@ -56,7 +56,7 @@ class Recorder(object):
     def record_to_csv(self, filename, header, data):
         try:
             file_path = '{}/{}.csv'.format(self.folder_path, filename)
-            with open(file_path, 'w') as output_file:
+            with open(file_path, 'wb') as output_file:
                 writer = csv.writer(output_file, delimiter=',')
                 writer.writerow(header)
                 for day in data:
