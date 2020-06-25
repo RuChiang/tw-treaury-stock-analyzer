@@ -77,10 +77,8 @@ def get_stock_info(idx, date, data_type):
 
 def get_index_info(date, data_type):
     sleep(0.5)
-    res = req.get(f"https://www.twse.com.tw/exchangeReport/FMTQIK?response=json&date={date}&_=1592225418511",
-                  headers={'Accept-Language': 'zh-TW'})
-    logger.debug(f"get_index_info res {res}")
-    return json.loads(res.text)[data_type]
+    return json.loads(req.get(f"https://www.twse.com.tw/indicesReport/MI_5MINS_HIST?response=json&date={date}&_=1592225418511",
+                              headers={'Accept-Language': 'zh-TW'}).text)[data_type]
 
 
 def main():
@@ -126,7 +124,7 @@ def main():
             continue
 
         headers = [f"股票{title}" for title in get_stock_info(target, start, "fields")] \
-            + [f"大盤{title}" for title in get_index_info(start, "fields")
+            + [f"發行量加權股價指數{title}" for title in get_index_info(start, "fields")
                ][1:]
 
         data = []
