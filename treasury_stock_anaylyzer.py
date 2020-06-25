@@ -12,6 +12,8 @@ import requests
 import logging
 import urllib
 import random
+from time import sleep
+import traceback
 
 from datetime import datetime
 
@@ -56,7 +58,7 @@ class Recorder(object):
     def record_to_csv(self, filename, header, data):
         try:
             file_path = '{}/{}.csv'.format(self.folder_path, filename)
-            with open(file_path, 'wb') as output_file:
+            with open(file_path, 'w') as output_file:
                 writer = csv.writer(output_file, delimiter=',')
                 writer.writerow(header)
                 for day in data:
@@ -64,14 +66,17 @@ class Recorder(object):
 
         except Exception as err:
             print(err)
+            traceback.print_exc()
 
 
 def get_stock_info(idx, date, data_type):
+    sleep(0.5)
     return json.loads(req.get(f"https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={date}&stockNo={idx}&_=1592225418511",
                               headers={'Accept-Language': 'zh-TW'}).text)[data_type]
 
 
 def get_index_info(date, data_type):
+    sleep(0.5)
     res = req.get(f"https://www.twse.com.tw/exchangeReport/FMTQIK?response=json&date={date}&_=1592225418511",
                   headers={'Accept-Language': 'zh-TW'})
     logger.debug(f"get_index_info res {res}")
