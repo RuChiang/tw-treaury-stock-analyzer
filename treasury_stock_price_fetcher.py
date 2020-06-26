@@ -16,35 +16,15 @@ from time import sleep
 import traceback
 
 from datetime import datetime
-
+from utils.file_reader import FileReader
 
 logging.basicConfig()
 logging.root.setLevel(logging.DEBUG)
-
-epoch = datetime.utcfromtimestamp(0)
-
-req = requests.Session()
-req.get('https://www.twse.com.tw/')
-
 logger = logging.getLogger('stock price fetcher')
 
 
-def unix_time_millis(dt):
-    return (dt - epoch).total_seconds() * 1000.0
-
-
-class FileReader(object):
-    def __init__(self, file_name, indices):
-        self.file_name = file_name
-        self.indices = indices
-
-    def get_date_range(self):
-        rows = []
-        with open(self.file_name, newline='', encoding='utf-8', errors='replace') as csvfile:
-            for cols in csv.reader(csvfile):
-                if cols[1] in self.indices:
-                    rows.append([cols[9], cols[10]])
-        return rows
+req = requests.Session()
+req.get('https://www.twse.com.tw/')
 
 
 class Recorder(object):
